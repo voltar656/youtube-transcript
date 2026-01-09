@@ -1,11 +1,12 @@
 services:
-  backend:
+  app:
     build: .
     ports:
       - "8000:8000"
+      - "3000:3000"
     environment:
       - LOG_LEVEL=INFO
-      - ALLOWED_ORIGINS=http://localhost:3000,http://frontend:3000
+      - ALLOWED_ORIGINS=*
       - CACHE_TTL_SECONDS=86400
       - RATE_LIMIT_PER_MINUTE=30
     healthcheck:
@@ -13,17 +14,4 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-    depends_on:
-      backend:
-        condition: service_healthy
     restart: unless-stopped
