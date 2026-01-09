@@ -77,7 +77,7 @@ export default function Home() {
           <p>
             API docs available at{" "}
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/docs`}
+              href={typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}:8000/docs` : "/docs"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-red-600 hover:underline"
