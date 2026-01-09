@@ -1,6 +1,11 @@
 import { TranscriptRequest, TranscriptResponse, ErrorResponse } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+function getApiUrl(): string {
+  if (typeof window !== "undefined") {
+    return `${window.location.protocol}//${window.location.hostname}:8000`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+}
 
 export class ApiError extends Error {
   constructor(
@@ -16,7 +21,7 @@ export class ApiError extends Error {
 export async function fetchTranscript(
   request: TranscriptRequest
 ): Promise<TranscriptResponse> {
-  const response = await fetch(`${API_URL}/transcript`, {
+  const response = await fetch(`${getApiUrl()}/transcript`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,5 +61,5 @@ export function getExportUrl(
     params.set("merge_threshold_seconds", mergeThreshold.toString());
   }
 
-  return `${API_URL}/transcript/export?${params.toString()}`;
+  return `${getApiUrl()}/transcript/export?${params.toString()}`;
 }
