@@ -26,73 +26,73 @@ Goal: a pipe-friendly CLI that prints transcript *text only* to stdout.
 
 ## Backend Core Setup
 
-- [ ] Initialize project with `uv` targeting Python 3.11+.
-- [ ] Add dependencies: `fastapi[standard]`, `uvicorn[standard]`, `youtube-transcript-api`
-- [ ] Add new dependencies: `cachetools`, `slowapi`, `python-multipart`
-- [ ] Implement directory layout: `app/main.py`, `app/models.py`, `app/service.py`
+- [x] Initialize project with `uv` targeting Python 3.11+.
+- [x] Add dependencies: `fastapi[standard]`, `uvicorn[standard]`, `youtube-transcript-api`
+- [x] Add new dependencies: `cachetools`, `slowapi`, `python-multipart`
+- [x] Implement directory layout: `app/main.py`, `app/models.py`, `app/service.py`
 
 ## Backend Service Layer
 
-- [ ] Implement `extract_video_id()` robustly (full URL, short URL, embed URL, raw ID)
-- [ ] Implement `fetch_transcript(video_id, language_codes)` with 30s timeout
-- [ ] Add in-memory caching with TTL (100 items, 24h)
-- [ ] Implement optional `merge_segments(segments, threshold)`
-- [ ] Implement `format_export(segments, format, video_id)` for JSON, TXT, SRT
-- [ ] Add `sanitize_video_id()` validation (alphanumeric, dash, underscore only)
-- [ ] Map `youtube-transcript-api` errors → stable HTTP status codes (403, 404, 500)
+- [x] Implement `extract_video_id()` robustly (full URL, short URL, embed URL, raw ID)
+- [x] Implement `fetch_transcript(video_id, language_codes)` with 30s timeout
+- [x] Add in-memory caching with TTL (100 items, 24h)
+- [x] Implement optional `merge_segments(segments, threshold)`
+- [x] Implement `format_export(segments, format, video_id)` for JSON, TXT, SRT
+- [x] Add `sanitize_video_id()` validation (alphanumeric, dash, underscore only)
+- [x] Map `youtube-transcript-api` errors → stable HTTP status codes (403, 404, 500)
 
 ## Backend API Layer
 
-- [ ] Define Pydantic models: `TranscriptRequest`, `TranscriptResponse`, `Segment`, `ErrorResponse`
-- [ ] Add input validation with `field_validator` (length check, mutual exclusivity of url/id)
-- [ ] Implement `/health` endpoint
-- [ ] Implement `POST /transcript` with stable schema
-- [ ] Implement `GET /transcript/export` (query params: `video_id`, `format`)
-- [ ] Add CORS middleware with `ALLOWED_ORIGINS`
-- [ ] Add GZip compression middleware (minimum_size=1000)
-- [ ] Add rate limiting with `slowapi` (10 req/min default)
-- [ ] Add structured JSON logging with request IDs (simple implementation)
+- [x] Define Pydantic models: `TranscriptRequest`, `TranscriptResponse`, `Segment`, `ErrorResponse`
+- [x] Add input validation with `field_validator` (length check, mutual exclusivity of url/id)
+- [x] Implement `/health` endpoint
+- [x] Implement `POST /transcript` with stable schema
+- [x] Implement `GET /transcript/export` (query params: `video_id`, `format`)
+- [x] Add CORS middleware with `ALLOWED_ORIGINS`
+- [x] Add GZip compression middleware (minimum_size=1000)
+- [x] Add rate limiting with `slowapi` (30 req/min default)
+- [x] Add structured JSON logging with request IDs (simple implementation)
 
 ## Backend Tests
 
-- [ ] Unit tests for `extract_video_id`
-- [ ] Unit tests for `merge_segments`
-- [ ] Unit tests for `format_export` (JSON, TXT, SRT formats)
-- [ ] Unit tests for `sanitize_video_id`
+- [x] Unit tests for `extract_video_id`
+- [x] Unit tests for `merge_segments`
+- [x] Unit tests for `format_export` (JSON, TXT, SRT formats)
+- [x] Unit tests for `sanitize_video_id`
 - [ ] Integration test for `fetch_transcript` using known public video ID
 
 ## Backend Deployment
 
-- [ ] Add `Dockerfile` (python:3.11-slim, non-root user, uvicorn entrypoint)
-- [ ] Add backend service to `docker-compose.yml`
-- [ ] Configure environment variables in `docker-compose.yml`
-- [ ] Add healthcheck to backend service
-- [ ] Document build and run commands
+- [x] Add `Dockerfile` (python:3.12-slim, non-root user, uvicorn entrypoint)
+- [x] Add backend service to `docker-compose.yml`
+- [x] Configure environment variables in `docker-compose.yml`
+- [x] Add healthcheck to backend service
+- [x] Document build and run commands
 
 ## Frontend Core Setup
 
-- [ ] Initialize Next.js project with TypeScript and App Router
-- [ ] Add Tailwind CSS configuration
-- [ ] Create directory structure: `app/`, `components/`, `lib/`
-- [ ] Configure `NEXT_PUBLIC_API_URL` environment variable
+- [x] Initialize Next.js project with TypeScript and App Router
+- [x] Add Tailwind CSS configuration
+- [x] Create directory structure: `app/`, `components/`, `lib/`
+- [x] Configure `NEXT_PUBLIC_API_URL` environment variable
 - [ ] Add Vitest for testing
 
 ## Frontend Components
 
 - [ ] Create `ErrorBoundary` component for error handling
-- [ ] Create `TranscriptForm` component (URL/ID input, language selector, merge threshold)
-- [ ] Create `TranscriptDisplay` component (segments list)
-- [ ] Create `Segment` component (individual segment with timestamp)
-- [ ] Create `ExportButtons` component (JSON, TXT, SRT buttons)
+- [x] Create `TranscriptForm` component (URL/ID input, language selector, merge threshold)
+- [x] Create `TranscriptDisplay` component (segments list)
+- [x] Create `Segment` component (individual segment with timestamp)
+- [x] Create `ExportButtons` component (JSON, TXT, SRT buttons)
 
 ## Frontend Integration
 
-- [ ] Implement API client functions in `lib/api.ts`
-- [ ] Implement format formatters in `lib/formatters.ts`
-- [ ] Integrate components in `page.tsx`
+- [x] Implement API client functions in `lib/api.ts`
+- [x] Implement format formatters in `lib/formatters.ts`
+- [x] Integrate components in `page.tsx`
 - [ ] Wrap main page with `ErrorBoundary` in `layout.tsx`
-- [ ] Add loading states and error handling
-- [ ] Add copy-to-clipboard functionality for timestamps
+- [x] Add loading states and error handling
+- [x] Add copy-to-clipboard functionality for timestamps
 
 ## Frontend Tests
 
@@ -103,9 +103,9 @@ Goal: a pipe-friendly CLI that prints transcript *text only* to stdout.
 
 ## Documentation
 
-- [ ] Update README with quick start guide
-- [ ] Document environment variables (backend and frontend)
-- [ ] Document API endpoints (available at `/docs`)
-- [ ] Document Docker Compose usage
+- [x] Update README with quick start guide
+- [x] Document environment variables (backend and frontend)
+- [x] Document API endpoints (available at `/docs`)
+- [x] Document Docker Compose usage
 - [ ] Document monitoring and maintenance procedures
 - [ ] Document export formats and use cases
