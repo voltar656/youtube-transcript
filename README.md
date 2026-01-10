@@ -6,22 +6,43 @@ A lightweight FastAPI microservice and Next.js web interface that extracts trans
 
 - **REST API**: FastAPI backend with `/health`, `/transcript`, and `/transcript/export` endpoints
 - **Web UI**: Next.js interface for fetching, viewing, and exporting transcripts
+- **Video Metadata**: Title, channel, upload date, duration, view count, and description
 - **Export formats**: JSON (machine-readable), TXT (human-readable), SRT (subtitle format)
 - **Input**: YouTube URL or video ID, optional language codes, segment merging threshold
-- **Output**: Structured JSON with `video_id`, `language_code`, `is_generated`, and timestamped segments
+- **Output**: Structured JSON with video metadata and timestamped segments
 - **Performance**: In-memory caching with TTL, rate limiting, timeout handling
-- **Production-ready**: Dockerized, Docker Compose for local dev
+- **Production-ready**: Single Docker image with both frontend and backend
 
 ## Quick Start
 
-Run the full stack (backend + frontend) with Docker Compose:
+### Docker (Recommended)
+
+Pull from GitLab Container Registry:
+
+```bash
+docker run -d --name youtube-transcript \
+  -p 3000:3000 -p 8000:8000 \
+  --restart unless-stopped \
+  registry.gitlab.com/vikeshmalhi/youtube-transcripter:latest
+```
+
+Or build locally:
+
+```bash
+git clone https://gitlab.com/vikeshmalhi/youtube-transcripter.git
+cd youtube-transcripter
+docker build -t youtube-transcript .
+docker run -d --name youtube-transcript -p 3000:3000 -p 8000:8000 --restart unless-stopped youtube-transcript
+```
+
+- **Web UI**: http://localhost:3000
+- **API Docs**: http://localhost:8000/docs
+
+### Docker Compose
 
 ```bash
 docker-compose up --build
 ```
-
-- Backend: http://localhost:8000 (API docs at `/docs`)
-- Frontend: http://localhost:3000
 
 ## Local Development
 
@@ -34,12 +55,12 @@ docker-compose up --build
 uv sync
 
 # Run dev server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### Frontend (Next.js)
 
-**Prerequisites**: Node.js 18+
+**Prerequisites**: Node.js 20+
 
 ```bash
 cd web
@@ -54,11 +75,7 @@ npm run dev
 ### Running Tests
 
 ```bash
-# Backend tests
 uv run pytest
-
-# Run specific test
-uv run pytest tests/test_service.py
 ```
 
 ## API Usage
@@ -81,6 +98,16 @@ curl -X POST "http://localhost:8000/transcript" \
   "video_id": "dQw4w9WgXcQ",
   "language_code": "en",
   "is_generated": false,
+  "metadata": {
+    "title": "Rick Astley - Never Gonna Give You Up",
+    "channel": "Rick Astley",
+    "channel_url": "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+    "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "upload_date": "2009-10-25",
+    "duration": 213,
+    "view_count": 1730999238,
+    "description": "The official video for..."
+  },
   "segments": [
     {
       "index": 0,
@@ -114,25 +141,34 @@ curl "http://localhost:8000/transcript/export?video_id=dQw4w9WgXcQ&format=srt" -
 | `ALLOWED_ORIGINS` | `*` | CORS origins (comma-separated) |
 | `CACHE_TTL_SECONDS` | `86400` | Cache duration (default: 24 hours) |
 | `RATE_LIMIT_PER_MINUTE` | `30` | Rate limit per IP address |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:8000` | Backend API URL (frontend) |
 
-## Directory Structure
+## Architecture
+
+Single Docker image running:
+- **Backend**: FastAPI + uvicorn on port 8000
+- **Frontend**: Next.js on port 3000
+- **Process Manager**: supervisord
 
 ```
 .
 ├── app/
 │   ├── main.py          # FastAPI app + routes
 │   ├── models.py        # Pydantic schemas
-│   └── service.py       # YouTube transcript logic
+│   └── service.py       # YouTube transcript + metadata logic
 ├── web/
 │   ├── app/             # Next.js App Router
 │   ├── components/      # React components
 │   └── lib/             # API client, types
-├── tests/               # Backend tests
-├── Dockerfile           # Backend Dockerfile
-├── docker-compose.yml   # Full stack compose
-└── pyproject.toml       # Backend dependencies
+├── Dockerfile           # Combined image
+├── supervisord.conf     # Process manager config
+├── docker-compose.yml   # Local deployment
+└── pyproject.toml       # Python dependencies
 ```
+
+## Notes
+
+- **IP Blocking**: YouTube may block requests from cloud provider IPs. For reliable use, run on a homelab with a residential IP.
+- **Merge Threshold**: Combines adjacent transcript segments when gaps are ≤ threshold. Useful for creating cleaner subtitles. For LLM processing, use raw segments (threshold = 0).
 
 ## License
 
