@@ -2,11 +2,15 @@
 
 import re
 import os
+import logging
 import concurrent.futures
 from typing import Any
 
+import yt_dlp
 from cachetools import TTLCache
 from youtube_transcript_api import YouTubeTranscriptApi
+
+logger = logging.getLogger(__name__)
 from youtube_transcript_api._errors import (
     TranscriptsDisabled,
     NoTranscriptFound,
@@ -68,6 +72,41 @@ def sanitize_video_id(video_id: str) -> str:
 # Global API instance (thread-per-request is fine for our use case)
 _api = YouTubeTranscriptApi()
 
+# yt-dlp options for metadata extraction
+_ydl_opts = {
+    'quiet': True,
+    'no_warnings': True,
+    'skip_download': True,
+    'extract_flat': False,
+}
+
+
+def fetch_video_metadata(video_id: str) -> dict[str, Any] | None:
+    """Fetch video metadata from YouTube using yt-dlp."""
+    try:
+        with yt_dlp.YoutubeDL(_ydl_opts) as ydl:
+            url = f"https://www.youtube.com/watch?v={video_id}"
+            info = ydl.extract_info(url, download=False)
+            
+            # Format upload date from YYYYMMDD to YYYY-MM-DD
+            upload_date = info.get('upload_date')
+            if upload_date and len(upload_date) == 8:
+                upload_date = f"{upload_date[:4]}-{upload_date[4:6]}-{upload_date[6:8]}"
+            
+            return {
+                'title': info.get('title', 'Unknown'),
+                'channel': info.get('channel', info.get('uploader', 'Unknown')),
+                'channel_url': info.get('channel_url', info.get('uploader_url', '')),
+                'video_url': url,
+                'upload_date': upload_date,
+                'duration': info.get('duration'),
+                'view_count': info.get('view_count'),
+                'description': info.get('description'),
+            }
+    except Exception as e:
+        logger.warning(f"Failed to fetch metadata for {video_id}: {e}")
+        return None
+
 
 def fetch_transcript(
     video_id: str,
@@ -95,11 +134,15 @@ def fetch_transcript(
             )
             fetched = future.result(timeout=timeout)
         
+        # Fetch metadata in parallel
+        metadata = fetch_video_metadata(video_id)
+        
         # The fetched result is a FetchedTranscript object with metadata
         result = {
             "video_id": video_id,
             "language_code": fetched.language_code,
             "is_generated": fetched.is_generated,
+            "metadata": metadata,
             "segments": [
                 {
                     "index": i,

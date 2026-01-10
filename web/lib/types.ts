@@ -6,10 +6,22 @@ export interface Segment {
   text: string;
 }
 
+export interface VideoMetadata {
+  title: string;
+  channel: string;
+  channel_url: string;
+  video_url: string;
+  upload_date?: string;
+  duration?: number;
+  view_count?: number;
+  description?: string;
+}
+
 export interface TranscriptResponse {
   video_id: string;
   language_code: string;
   is_generated: boolean;
+  metadata?: VideoMetadata;
   segments: Segment[];
 }
 

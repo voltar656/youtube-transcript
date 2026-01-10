@@ -40,11 +40,24 @@ class TranscriptRequest(BaseModel):
         return v
 
 
+class VideoMetadata(BaseModel):
+    """Video metadata from YouTube."""
+    title: str
+    channel: str
+    channel_url: str
+    video_url: str
+    upload_date: str | None = None
+    duration: int | None = None
+    view_count: int | None = None
+    description: str | None = None
+
+
 class TranscriptResponse(BaseModel):
     """Response model for transcript data."""
     video_id: str
     language_code: str
     is_generated: bool
+    metadata: VideoMetadata | None = None
     segments: list[Segment]
 
 

@@ -17,6 +17,7 @@ from app.models import (
     TranscriptRequest,
     TranscriptResponse,
     Segment,
+    VideoMetadata,
     ErrorResponse,
     HealthResponse,
 )
@@ -147,6 +148,7 @@ async def get_transcript(request: Request, body: TranscriptRequest):
             video_id=result["video_id"],
             language_code=result["language_code"],
             is_generated=result["is_generated"],
+            metadata=VideoMetadata(**result["metadata"]) if result.get("metadata") else None,
             segments=[Segment(**seg) for seg in segments],
         )
         
