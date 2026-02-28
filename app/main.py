@@ -48,7 +48,7 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title="YouTube Transcript API",
     description="Extract transcripts from YouTube videos",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 # Add rate limit error handler

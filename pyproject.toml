@@ -1,6 +1,6 @@
 [project]
 name = "youtube-transcript-api-service"
-version = "0.1.0"
+version = "0.2.0"
 description = "YouTube Transcript extraction API and Web UI"
 requires-python = ">=3.11"
 dependencies = [
