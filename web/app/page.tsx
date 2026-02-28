@@ -75,14 +75,14 @@ export default function Home() {
 
         <footer className="mt-8 text-center text-sm text-gray-500">
           <p>
-            API docs available at{" "}
+            Powered by{" "}
             <a
-              href={typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}:8000/docs` : "/docs"}
+              href="https://github.com/voltar656/youtube-transcript"
               target="_blank"
               rel="noopener noreferrer"
               className="text-red-600 hover:underline"
             >
-              /docs
+              youtube-transcript
             </a>
           </p>
         </footer>

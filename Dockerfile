@@ -11,8 +11,6 @@ WORKDIR /app
 COPY --from=frontend-deps /app/node_modules ./node_modules
 COPY web/ .
 ENV NEXT_TELEMETRY_DISABLED=1
-# Set API URL to local backend
-ENV NEXT_PUBLIC_API_URL=http://localhost:8000
 RUN npm run build
 
 # ============================================
@@ -58,8 +56,8 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Set permissions
 RUN chown -R appuser:appuser /app /var/log/supervisor
 
-# Expose ports
-EXPOSE 3000 8000
+# Expose web UI port (backend is accessed via internal proxy)
+EXPOSE 3000
 
 # Start supervisor
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
